@@ -9,7 +9,7 @@ dependencies = [
     "gunicorn>=25.3.0",
     "python-multipart>=0.0.31",
     "opencv-python-headless>=4.13.0.92,<5",
-    "onnxruntime>=1.20",
+    "onnxruntime>=1.32.0",
     "rapidocr>=3.9.2,<4",
     "uvicorn>=0.46.0",
 ]
