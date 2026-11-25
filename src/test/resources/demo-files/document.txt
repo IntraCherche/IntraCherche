@@ -1,0 +1,11 @@
+Enterprise Search Engine Documentation
+
+This document explains how the enterprise search engine works.
+It covers the discovery process, file registry, and indexing pipeline.
+The system uses Apache Solr for search capabilities.
+
+Key Features:
+- File discovery
+- Metadata extraction
+- Content indexing
+- Search functionality

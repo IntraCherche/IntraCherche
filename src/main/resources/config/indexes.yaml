@@ -1,0 +1,40 @@
+indexes:
+  - coreName: Index_1
+    # status can be active | paused | delete
+    # in case it is delete another flag "confirmDelete" has to be set to true
+    # paused means the index is kept as is (not updated) but remains searchable
+    status : ACTIVE
+    # visibleToGroups (required): who sees this index in the Sources column, searches it,
+    # asks Sherlock about it and opens its documents.
+    #   ALL                     every user
+    #   [Medical, Direction]    only members of these AD groups (pre-Windows 2000 names),
+    #                           checked against AD at startup: an unknown name stops the app
+    # It restricts, never grants: inside a visible index, each file's NTFS rights still apply.
+    visibleToGroups: ALL
+    # ocr: true by default — set to false to skip OCR on scanned PDFs for this index
+    ocr: true
+    # allowedExtensions: omit to use the default set (pdf, doc, docx, odt, xls, xlsx, ods, ppt, pptx, odp, txt)
+    # override to restrict or expand what gets indexed for this index, e.g.:
+    # allowedExtensions: [pdf, docx, txt]
+    # indexedDirs: one entry per SMB share. smbDomain (optional) is the Active Directory domain of the account.
+    indexedDirs:
+      - mountType: SMB
+        smbServer: server1
+        smbShare: HR
+        smbUser: service_account
+        smbPassword: CHANGE_ME
+      - mountType: SMB
+        smbServer: server1
+        smbShare: Archives
+        smbUser: service_account
+        smbPassword: CHANGE_ME
+  - coreName: Index_2
+    status: active
+    visibleToGroups: ALL
+    ocr: true
+    indexedDirs:
+      - mountType: SMB
+        smbServer: server1
+        smbShare: Archives
+        smbUser: service_account
+        smbPassword: CHANGE_ME

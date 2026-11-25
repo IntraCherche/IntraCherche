@@ -1,0 +1,1 @@
+This is the second sample test file. It contains different content than the first file to demonstrate variety in the test files. This file helps verify that multiple files can be created successfully in the demo-windows-en directory structure.

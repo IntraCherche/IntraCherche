@@ -1,0 +1,1 @@
+Les fonctionnalités de partage de documents permettent de collaborer efficacement entre équipes. Les permissions peuvent être configurées pour chaque utilisateur ou groupe.

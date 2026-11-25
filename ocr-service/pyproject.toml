@@ -1,0 +1,22 @@
+[project]
+name = "ocr-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.136.1",
+    "gunicorn>=25.3.0",
+    "python-multipart>=0.0.31",
+    "opencv-python-headless>=4.13.0.92,<5",
+    "onnxruntime>=1.20",
+    "rapidocr>=3.9.2,<4",
+    "uvicorn>=0.46.0",
+]
+
+[tool.uv]
+# rapidocr depends on the GUI build of OpenCV, which links libGL:
+# on a server without libgl1 (air-gapped, so it cannot be apt-installed) the OCR
+# worker dies on `import cv2`. Replace it with the headless build, which ships
+# the same cv2 module with no display dependencies.
+override-dependencies = ["opencv-python; sys_platform == 'never'"]

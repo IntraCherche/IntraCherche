@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="IntraCherche Schema" version="1.6">
+    <!--
+        This is the Solr schema for the IntraCherche application.
+        It defines the fields that will be indexed and stored in Solr.
+    -->
+
+    <!-- Field definitions -->
+    <field name="id" type="string" indexed="true" stored="true" required="true"/>
+    <field name="path" type="string" indexed="true" stored="true"/>
+    <field name="content" type="text_general"
+           indexed="true"
+           stored="false"
+           termVectors="true"
+           omitNorms="false"/>
+    <field name="title" type="text_general" indexed="true" stored="true"/>
+    <field name="mime_type" type="string" indexed="true" stored="true"/>
+    <field name="modified" type="pdate" indexed="true" stored="true"/>
+    <field name="access_tokens"
+           type="string"
+           indexed="true"
+           stored="false"
+           multiValued="true"
+           docValues="true" />
+
+
+    <!-- Dynamic field definitions -->
+    <dynamicField name="meta_*"
+                  type="string"
+                  indexed="true"
+                  stored="true"/>
+
+
+    <dynamicField name="*_s" type="string" indexed="true" stored="true"/>
+    <dynamicField name="*_ss" type="string" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="*_i" type="int" indexed="true" stored="true"/>
+    <dynamicField name="*_ii" type="int" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="*_l" type="long" indexed="true" stored="true"/>
+    <dynamicField name="*_ll" type="long" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="*_d" type="double" indexed="true" stored="true"/>
+    <dynamicField name="*_dd" type="double" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="*_dt" type="date" indexed="true" stored="true"/>
+    <dynamicField name="*_p" type="pdate" indexed="true" stored="true"/>
+    <dynamicField name="*_txt" type="text_general" indexed="true" stored="true"/>
+    <dynamicField name="*_t" type="text_general" indexed="true" stored="false"/>
+
+    <!-- Default field for text search -->
+    <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+
+    <!-- Unique key field -->
+    <uniqueKey>id</uniqueKey>
+
+    <!-- Field type definitions -->
+    <types>
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+        <fieldType name="int" class="solr.IntPointField"/>
+        <fieldType name="long" class="solr.LongPointField"/>
+        <fieldType name="double" class="solr.DoublePointField"/>
+        <fieldType name="date" class="solr.DatePointField"/>
+        <fieldType name="pdate" class="solr.DatePointField"/>
+        <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+            <analyzer type="index">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+            <analyzer type="query">
+                <tokenizer class="solr.StandardTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+            </analyzer>
+        </fieldType>
+    </types>
+</schema>

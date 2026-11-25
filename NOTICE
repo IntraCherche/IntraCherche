@@ -1,0 +1,14 @@
+IntraCherche
+Copyright (c) 2015-2026 IntraCherche
+
+Licensed under the European Union Public Licence v. 1.2 (EUPL-1.2). See LICENSE.
+
+Third-party components keep their own licences. In particular, the embedding model
+intfloat/multilingual-e5-base is MIT-licensed; the other components bundled in the archives are
+listed, with their licences, in distribution/NOTICE.
+
+src/main/resources/benchmark/benchmark-text.pdf is a print of three articles of the French Wikipedia
+(« Intelligence artificielle », « Histoire de l'Union européenne », « Histoire des États-Unis »),
+used to measure indexing speed. Text available under the Creative Commons Attribution-ShareAlike 4.0
+licence (https://creativecommons.org/licenses/by-sa/4.0/); the authors are listed in the history of
+each article on fr.wikipedia.org.

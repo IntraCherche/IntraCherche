@@ -1,0 +1,2 @@
+org.springframework.boot.diagnostics.FailureAnalyzer=eu.intracherche.intracherche.config.IndexesConfigFailureAnalyzer,\
+eu.intracherche.intracherche.config.KeystoreFailureAnalyzer

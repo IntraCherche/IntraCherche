@@ -1,0 +1,4 @@
+Yet another demo text file.
+This one has some technical content about enterprise search systems.
+It discusses indexing, discovery, and registry components.
+The files are stored in a test directory for demonstration.

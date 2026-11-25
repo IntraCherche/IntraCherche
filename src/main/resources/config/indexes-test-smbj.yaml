@@ -1,0 +1,18 @@
+indexes:
+
+  - coreName: Index_smb_EN
+    visibleToGroups: ALL
+    indexedDirs:
+      - mountType: SMB
+        smbUser: cs_indexer_ad
+        smbPassword: Password123
+        smbServer: 198.51.100.21
+        smbShare: \\Win11\Data_EN
+  - coreName: Index_smb_FR
+    visibleToGroups: ALL
+    indexedDirs:
+      - mountType: SMB
+        smbUser: cs_indexer_ad
+        smbPassword: Password123
+        smbServer: 198.51.100.21
+        smbShare: Data_FR

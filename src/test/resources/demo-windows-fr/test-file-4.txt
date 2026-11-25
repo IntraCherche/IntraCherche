@@ -1,0 +1,1 @@
+Le processus d'indexation automatique garantit que tous les nouveaux documents sont rapidement accessibles dans le système de recherche. Les métadonnées sont extraites pour améliorer la pertinence des résultats.

@@ -1,0 +1,13 @@
+[project]
+name = "embedding-service"
+version = "0.1.0"
+description = "Semantic embedding service for hybrid search (multilingual-e5-base)"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.136.1",
+    "uvicorn[standard]>=0.46.0",
+    "onnxruntime>=1.20",
+    "tokenizers>=0.22",
+    "huggingface-hub>=0.30",
+    "numpy>=2",
+]

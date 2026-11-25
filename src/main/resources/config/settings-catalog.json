@@ -1,0 +1,783 @@
+[
+ {
+  "key": "indexing-config.cycleIntervalMinutes",
+  "tier": "common",
+  "group": "Indexation",
+  "label": "Pause entre deux cycles d'indexation",
+  "type": "int",
+  "help": "Temps d'attente entre la fin d'un cycle d'indexation et le début du suivant. Plus court : les nouveaux fichiers sont trouvés plus vite, au prix d'un parcours plus fréquent des partages.",
+  "unit": "minutes",
+  "min": 1,
+  "max": 1440
+ },
+ {
+  "key": "indexing-config.maxFileSizeMb",
+  "tier": "common",
+  "group": "Indexation",
+  "label": "Taille maximale d'un fichier lu",
+  "type": "int",
+  "help": "Un fichier est lu entièrement en mémoire. Au-delà de cette taille il n'est pas lu : seul son nom est indexé.",
+  "unit": "Mo",
+  "min": 1,
+  "max": 4096
+ },
+ {
+  "key": "registry-config.stalledFilesThresholdHours",
+  "tier": "common",
+  "group": "Indexation",
+  "label": "Délai avant retrait d'un fichier disparu",
+  "type": "int",
+  "help": "Un fichier qui n'a plus été vu sur son partage depuis ce délai est retiré de l'index (720 h = 30 jours).",
+  "unit": "heures",
+  "min": 1,
+  "max": 87600
+ },
+ {
+  "key": "jwt.expirationMinutes",
+  "tier": "common",
+  "group": "Conservation et sécurité",
+  "label": "Durée d'une connexion",
+  "type": "int",
+  "help": "Temps pendant lequel un utilisateur reste connecté sans retaper son mot de passe (1440 = 24 h). Une session s'arrête avant si le compte est désactivé ou son mot de passe change.",
+  "unit": "minutes",
+  "min": 5,
+  "max": 525600
+ },
+ {
+  "key": "audit.retention-days",
+  "tier": "common",
+  "group": "Conservation et sécurité",
+  "label": "Conservation du journal d'audit",
+  "type": "int",
+  "help": "Nombre de jours de journaux d'audit conservés avant suppression automatique (365 = 1 an, 1095 = 3 ans).",
+  "unit": "jours",
+  "min": 1,
+  "max": 3650
+ },
+ {
+  "key": "search.rateLimitPerMinute",
+  "tier": "common",
+  "group": "Conservation et sécurité",
+  "label": "Recherches par minute et par utilisateur",
+  "type": "int",
+  "help": "Protège tout le monde d'un script qui s'emballe. Très au-dessus de ce qu'une personne tape. 0 = illimité.",
+  "unit": "par minute",
+  "min": 0,
+  "max": 10000
+ },
+ {
+  "key": "admin.adminGroupSid",
+  "tier": "common",
+  "group": "Accès",
+  "label": "Groupe administrateur",
+  "type": "groupSid",
+  "help": "Groupe de l'annuaire dont les membres accèdent à ce panneau. Ne jamais le laisser vide : plus personne ne pourrait administrer l'application.",
+  "required": true
+ },
+ {
+  "key": "llm.enabled",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Activer Sherlock",
+  "type": "bool",
+  "help": "Désactivé : le panneau Sherlock disparaît, les questions sont refusées et la mémoire qu'il réserve est libérée."
+ },
+ {
+  "key": "llm.sherlockGroupSid",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Groupe autorisé à utiliser Sherlock",
+  "type": "groupSid",
+  "help": "Laisser vide pour autoriser tous les utilisateurs connectés."
+ },
+ {
+  "key": "llm.quota.base",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Questions par jour — tous",
+  "type": "int",
+  "help": "Nombre de questions par utilisateur et par jour (remise à zéro à minuit). 0 = illimité.",
+  "unit": "par jour",
+  "min": 0,
+  "max": 100000
+ },
+ {
+  "key": "llm.quota.premium",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Questions par jour — groupe « premium »",
+  "type": "int",
+  "help": "Quota des membres du groupe premium ci-dessous. 0 = illimité.",
+  "unit": "par jour",
+  "min": 0,
+  "max": 100000
+ },
+ {
+  "key": "llm.quota.premiumGroupSid",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Groupe « premium »",
+  "type": "groupSid",
+  "help": "Membres bénéficiant du quota premium. Laisser vide si inutilisé."
+ },
+ {
+  "key": "llm.quota.extended",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Questions par jour — groupe « étendu »",
+  "type": "int",
+  "help": "Quota des membres du groupe étendu ci-dessous. 0 = illimité.",
+  "unit": "par jour",
+  "min": 0,
+  "max": 100000
+ },
+ {
+  "key": "llm.quota.extendedGroupSid",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Groupe « étendu »",
+  "type": "groupSid",
+  "help": "Membres bénéficiant du quota étendu. Laisser vide si inutilisé."
+ },
+ {
+  "key": "llm.quota.maxPending",
+  "tier": "common",
+  "group": "Sherlock (assistant)",
+  "label": "Questions simultanées par utilisateur",
+  "type": "int",
+  "help": "Questions qu'un même utilisateur peut avoir en attente ou en cours. 0 = sans limite.",
+  "min": 0,
+  "max": 100,
+  "slider": true
+ },
+ {
+  "key": "alerts.email.from",
+  "tier": "common",
+  "group": "Courriel des alertes",
+  "label": "Adresse d'expédition",
+  "type": "email",
+  "help": "Adresse qui apparaît comme expéditeur des courriels d'alerte."
+ },
+ {
+  "key": "alerts.email.base-url",
+  "tier": "common",
+  "group": "Courriel des alertes",
+  "label": "Adresse web d'IntraCherche",
+  "type": "url",
+  "help": "Adresse utilisée pour les liens dans les courriels, par exemple https://recherche.entreprise.local."
+ },
+ {
+  "key": "resources.reservedRamGb",
+  "tier": "memory",
+  "group": "Mémoire",
+  "label": "Mémoire réservée au système, à Java et à Solr",
+  "type": "int",
+  "help": "Mémoire vive (Go) retirée du budget des services Python. À augmenter si Java ou Solr ont de grands tas.",
+  "unit": "Go",
+  "min": 1,
+  "max": 1024
+ },
+ {
+  "key": "indexing-config.maxTextChars",
+  "tier": "advanced",
+  "group": "Indexation",
+  "label": "Texte maximal conservé par fichier",
+  "type": "int",
+  "help": "Au-delà de ce nombre de caractères (50 millions ≈ 8 000 pages) la suite du fichier n'est pas indexée. Le relever refait lire les fichiers concernés au prochain démarrage.",
+  "unit": "caractères",
+  "min": 1000,
+  "max": 2000000000
+ },
+ {
+  "key": "registry-config.safetyValveThresholdPercent",
+  "tier": "advanced",
+  "group": "Indexation",
+  "label": "Soupape de sécurité du nettoyage",
+  "type": "int",
+  "help": "Si plus de ce pourcentage de fichiers semble disparu (serveur de fichiers éteint), la suppression est bloquée pour éviter de vider l'index par accident.",
+  "unit": "%",
+  "min": 0,
+  "max": 100,
+  "slider": true
+ },
+ {
+  "key": "security.sidCacheTtlMinutes",
+  "tier": "advanced",
+  "group": "Conservation et sécurité",
+  "label": "Durée de mémorisation des groupes de l'annuaire",
+  "type": "int",
+  "help": "Délai pendant lequel les groupes d'un utilisateur sont réutilisés avant d'être relus. C'est aussi le délai d'effet d'un changement de groupe. 0 = relire à chaque requête.",
+  "unit": "minutes",
+  "min": 0,
+  "max": 1440
+ },
+ {
+  "key": "resources.indexingServicesNice",
+  "tier": "advanced",
+  "group": "Mémoire et services",
+  "label": "Priorité des services d'indexation",
+  "type": "int",
+  "help": "Priorité Linux (0 à 19) de l'OCR, du NER et des embeddings : plus haut, plus la recherche passe avant l'indexation.",
+  "min": 0,
+  "max": 19,
+  "slider": true
+ },
+ {
+  "key": "solr-config.solrBaseUrl",
+  "tier": "advanced",
+  "group": "Mémoire et services",
+  "label": "Adresse de Solr",
+  "type": "url",
+  "help": "Adresse du serveur Solr utilisé pour l'index."
+ },
+ {
+  "key": "ocr.pythonUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "OCR — adresse du service",
+  "type": "url",
+  "help": "localhost : le service est démarré par IntraCherche sur ce serveur. Une autre adresse désigne un serveur GPU : rien n'est alors démarré ici."
+ },
+ {
+  "key": "ocr.readTimeoutSeconds",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "OCR — délai maximal d'une requête",
+  "type": "int",
+  "help": "Temps d'attente d'une réponse du service avant abandon.",
+  "unit": "secondes",
+  "min": 1,
+  "max": 86400
+ },
+ {
+  "key": "ocr.workers",
+  "tier": "advanced",
+  "group": "Mémoire et services",
+  "label": "OCR — processus",
+  "type": "int",
+  "help": "0 = automatique selon les cœurs et la mémoire. Une valeur explicite plafonne l'usage sur une machine partagée.",
+  "min": 0,
+  "max": 64
+ },
+ {
+  "key": "reranker.pythonUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — adresse du service",
+  "type": "url",
+  "help": "localhost : le service est démarré par IntraCherche sur ce serveur. Une autre adresse désigne un serveur GPU : rien n'est alors démarré ici."
+ },
+ {
+  "key": "reranker.readTimeoutSeconds",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — délai maximal d'une requête",
+  "type": "int",
+  "help": "Temps d'attente d'une réponse du service avant abandon.",
+  "unit": "secondes",
+  "min": 1,
+  "max": 86400
+ },
+ {
+  "key": "reranker.workers",
+  "tier": "advanced",
+  "group": "Mémoire et services",
+  "label": "Reranker — processus",
+  "type": "int",
+  "help": "0 = automatique selon les cœurs et la mémoire. Une valeur explicite plafonne l'usage sur une machine partagée.",
+  "min": 0,
+  "max": 64
+ },
+ {
+  "key": "embedding.pythonUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Embeddings — adresse du service",
+  "type": "url",
+  "help": "localhost : le service est démarré par IntraCherche sur ce serveur. Une autre adresse désigne un serveur GPU : rien n'est alors démarré ici."
+ },
+ {
+  "key": "embedding.readTimeoutSeconds",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Embeddings — délai maximal d'une requête",
+  "type": "int",
+  "help": "Temps d'attente d'une réponse du service avant abandon.",
+  "unit": "secondes",
+  "min": 1,
+  "max": 86400
+ },
+ {
+  "key": "embedding.workers",
+  "tier": "advanced",
+  "group": "Mémoire et services",
+  "label": "Embeddings — processus",
+  "type": "int",
+  "help": "0 = automatique selon les cœurs et la mémoire. Une valeur explicite plafonne l'usage sur une machine partagée.",
+  "min": 0,
+  "max": 64
+ },
+ {
+  "key": "ner.pythonUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Extraction de lieux (NER) — adresse du service",
+  "type": "url",
+  "help": "localhost : le service est démarré par IntraCherche sur ce serveur. Une autre adresse désigne un serveur GPU : rien n'est alors démarré ici."
+ },
+ {
+  "key": "ner.readTimeoutSeconds",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Extraction de lieux (NER) — délai maximal d'une requête",
+  "type": "int",
+  "help": "Temps d'attente d'une réponse du service avant abandon.",
+  "unit": "secondes",
+  "min": 1,
+  "max": 86400
+ },
+ {
+  "key": "ner.workers",
+  "tier": "advanced",
+  "group": "Mémoire et services",
+  "label": "Extraction de lieux (NER) — processus",
+  "type": "int",
+  "help": "0 = automatique selon les cœurs et la mémoire. Une valeur explicite plafonne l'usage sur une machine partagée.",
+  "min": 0,
+  "max": 64
+ },
+ {
+  "key": "ocr.gpuUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "OCR — serveur GPU",
+  "type": "url",
+  "help": "Adresse du service OCR d'un serveur GPU (ex. http://192.168.10.20:8004). Vide : aucun.",
+  "allowBlank": true
+ },
+ {
+  "key": "ocr.maxOcrWaitMinutes",
+  "tier": "advanced",
+  "group": "Indexation",
+  "label": "OCR — attente maximale par cycle",
+  "type": "int",
+  "help": "Temps maximal d'attente des pages en cours d'OCR avant de passer à la suite. À relever pour de gros lots de numérisations.",
+  "unit": "minutes",
+  "min": 1,
+  "max": 1440
+ },
+ {
+  "key": "reranker.gpuUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — serveur GPU",
+  "type": "url",
+  "help": "GPU non toujours disponible : ses questions y sont notées d'abord, ici en repli. Vide : aucun.",
+  "allowBlank": true
+ },
+ {
+  "key": "reranker.enabled",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — activé",
+  "type": "bool",
+  "help": "Désactivé : Sherlock garde l'ordre de la recherche, sans réévaluer les passages."
+ },
+ {
+  "key": "reranker.candidates",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — passages évalués",
+  "type": "int",
+  "help": "Passages retenus par la recherche avant réévaluation. 0 = automatique (40 sur processeur, 100 sur GPU). Doit dépasser le nombre d'extraits donnés au modèle.",
+  "min": 0,
+  "max": 300
+ },
+ {
+  "key": "reranker.batchSize",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — passages par lot",
+  "type": "int",
+  "help": "0 = automatique (8 sur processeur, 32 sur GPU).",
+  "min": 0,
+  "max": 512
+ },
+ {
+  "key": "reranker.threads",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — fils de calcul",
+  "type": "int",
+  "help": "0 = automatique (la moitié des cœurs).",
+  "min": 0,
+  "max": 256,
+  "slider": true
+ },
+ {
+  "key": "reranker.maxPassageChars",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — longueur d'un passage",
+  "type": "int",
+  "help": "Longueur lue par le modèle ; au-delà de 1800 caractères, du temps perdu pour rien.",
+  "unit": "caractères",
+  "min": 100,
+  "max": 10000
+ },
+ {
+  "key": "reranker.rerankerModel",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Reranker — modèle",
+  "type": "string",
+  "help": "Modèle de réévaluation. À ne changer que sur conseil."
+ },
+ {
+  "key": "embedding.enabled",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Embeddings — activés",
+  "type": "bool",
+  "help": "Désactivé : la recherche n'utilise plus que les mots-clés."
+ },
+ {
+  "key": "embedding.embeddingModel",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Embeddings — modèle",
+  "type": "string",
+  "help": "Changer de modèle impose de tout ré-indexer. À ne faire que sur conseil."
+ },
+ {
+  "key": "embedding.queryMaxWaitMillis",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Embeddings — attente maximale d'une recherche",
+  "type": "int",
+  "help": "Au-delà, la recherche se fait sur les mots-clés seuls et l'interface signale la charge du serveur.",
+  "unit": "ms",
+  "min": 100,
+  "max": 60000
+ },
+ {
+  "key": "ner.geoCapCities",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Lieux — villes par document",
+  "type": "int",
+  "help": "Nombre maximal de villes conservées par document.",
+  "min": 0,
+  "max": 100,
+  "slider": true
+ },
+ {
+  "key": "ner.geoCapDepartments",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Lieux — départements par document",
+  "type": "int",
+  "help": "Nombre maximal de départements conservés par document.",
+  "min": 0,
+  "max": 100,
+  "slider": true
+ },
+ {
+  "key": "ner.geoCapRegions",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Lieux — régions par document",
+  "type": "int",
+  "help": "Nombre maximal de régions conservées par document.",
+  "min": 0,
+  "max": 100,
+  "slider": true
+ },
+ {
+  "key": "ner.geoCapCountries",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Lieux — pays par document",
+  "type": "int",
+  "help": "Nombre maximal de pays conservés par document.",
+  "min": 0,
+  "max": 100,
+  "slider": true
+ },
+ {
+  "key": "ner.nerModel",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Lieux — modèle spaCy",
+  "type": "string",
+  "help": "fr_core_news_md (≈300 Mo de mémoire) ou fr_core_news_lg (≈1 Go)."
+ },
+ {
+  "key": "llm.ollamaUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — adresse d'Ollama",
+  "type": "url",
+  "help": "localhost : Ollama sur ce serveur. Sinon l'adresse du serveur GPU (ex. http://192.168.10.20:11434)."
+ },
+ {
+  "key": "llm.gpuUrl",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — serveur GPU intermittent",
+  "type": "url",
+  "help": "Ollama d'un GPU non toujours disponible ; ici en repli. Vide : aucun.",
+  "allowBlank": true
+ },
+ {
+  "key": "llm.gpuModel",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — modèle du serveur GPU",
+  "type": "string",
+  "help": "Vide : le même que le modèle ci-dessous.",
+  "allowBlank": true
+ },
+ {
+  "key": "llm.model",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — modèle",
+  "type": "string",
+  "help": "qwen3.5:4b, qwen3.5:9b ou qwen3.5:27b (du plus petit au plus grand). Expérimental, optimisé pour le français."
+ },
+ {
+  "key": "llm.readTimeoutSeconds",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — délai maximal d'une réponse",
+  "type": "int",
+  "help": "À relever si des questions passent en échec avec « read timeout » dans le journal. Sans GPU, le modèle 9B demande plusieurs minutes.",
+  "unit": "secondes",
+  "min": 10,
+  "max": 86400
+ },
+ {
+  "key": "llm.numThread",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — fils de calcul (processeur)",
+  "type": "int",
+  "help": "0 = automatique. Ignoré quand Ollama tourne sur une autre machine.",
+  "min": 0,
+  "max": 256
+ },
+ {
+  "key": "llm.numCtx",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — fenêtre de contexte",
+  "type": "int",
+  "help": "En jetons. Trop petite, Ollama tronque silencieusement les instructions qui produisent les citations. 0 = laisser Ollama décider.",
+  "unit": "jetons",
+  "min": 0,
+  "max": 262144
+ },
+ {
+  "key": "llm.maxSnippets",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — extraits donnés au modèle",
+  "type": "int",
+  "help": "Nombre de passages transmis au modèle. Doit rester inférieur aux passages évalués par le reranker.",
+  "min": 1,
+  "max": 50,
+  "slider": true
+ },
+ {
+  "key": "llm.snippetFragSize",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — taille d'un extrait",
+  "type": "int",
+  "help": "Longueur des fragments mis en évidence par Solr.",
+  "unit": "caractères",
+  "min": 50,
+  "max": 5000
+ },
+ {
+  "key": "llm.maxPassageChars",
+  "tier": "advanced",
+  "group": "Services externes (GPU, modèles)",
+  "label": "Sherlock — texte donné par page",
+  "type": "int",
+  "help": "Caractères de chaque page transmis au modèle. Le contexte doit rester bien au-dessus du total.",
+  "unit": "caractères",
+  "min": 200,
+  "max": 20000
+ },
+ {
+  "key": "llm.queueCapacity",
+  "tier": "advanced",
+  "group": "Sherlock (assistant)",
+  "label": "Sherlock — file d'attente",
+  "type": "int",
+  "help": "Questions pouvant attendre. File pleine : une nouvelle question attend 5 s puis est refusée.",
+  "min": 1,
+  "max": 10000
+ },
+ {
+  "tier": "directory",
+  "group": "Annuaire (Active Directory)",
+  "required": true,
+  "allowBlank": false,
+  "slider": false,
+  "key": "spring.ldap.urls",
+  "label": "Adresse de l'annuaire",
+  "type": "ldapUrl",
+  "help": "Adresse LDAPS du contrôleur de domaine, par exemple ldaps://dc.entreprise.local:636. Utiliser ldaps (chiffré) plutôt que ldap."
+ },
+ {
+  "tier": "directory",
+  "group": "Annuaire (Active Directory)",
+  "required": true,
+  "allowBlank": false,
+  "slider": false,
+  "key": "spring.ldap.base",
+  "label": "Racine de l'annuaire",
+  "type": "string",
+  "help": "Racine de recherche, par exemple dc=entreprise,dc=local."
+ },
+ {
+  "tier": "directory",
+  "group": "Annuaire (Active Directory)",
+  "required": true,
+  "allowBlank": false,
+  "slider": false,
+  "key": "spring.ldap.username",
+  "label": "Compte de lecture",
+  "type": "string",
+  "help": "Compte (lecture seule) avec lequel IntraCherche interroge l'annuaire, par exemple ldap-reader@entreprise.local."
+ },
+ {
+  "tier": "directory",
+  "group": "Annuaire (Active Directory)",
+  "required": false,
+  "allowBlank": false,
+  "slider": false,
+  "key": "spring.ldap.password",
+  "label": "Mot de passe du compte de lecture",
+  "type": "secret",
+  "help": "Écrit sans jamais être affiché. Laisser vide pour conserver le mot de passe actuel."
+ },
+ {
+  "tier": "directory",
+  "group": "Annuaire (Active Directory)",
+  "required": true,
+  "allowBlank": false,
+  "slider": false,
+  "key": "spring.security.ldap.user.search-base",
+  "label": "Dossier des utilisateurs",
+  "type": "string",
+  "help": "Où chercher les comptes, relativement à la racine, par exemple CN=Users. Ne pas répéter les DC=… de la racine."
+ },
+ {
+  "tier": "directory",
+  "group": "Annuaire (Active Directory)",
+  "required": true,
+  "allowBlank": false,
+  "slider": false,
+  "key": "spring.security.ldap.user.search-filter",
+  "label": "Filtre de connexion",
+  "type": "string",
+  "help": "Comment retrouver un compte à partir de l'identifiant saisi ; {0} est remplacé par cet identifiant. Par défaut (sAMAccountName={0})."
+ },
+ {
+  "key": "spring.mail.host",
+  "tier": "common",
+  "group": "Courriel des alertes",
+  "label": "Serveur de courrier (SMTP)",
+  "type": "string",
+  "help": "Nom ou adresse du serveur qui envoie les courriels d'alerte. Laisser vide pour ne pas envoyer de courriel : les alertes restent visibles dans l'application (cloche).",
+  "required": false,
+  "allowBlank": true,
+  "slider": false
+ },
+ {
+  "key": "spring.mail.port",
+  "tier": "common",
+  "group": "Courriel des alertes",
+  "label": "Port du serveur de courrier",
+  "type": "int",
+  "help": "Port du serveur SMTP : 587 en général (STARTTLS), 465 (SSL) ou 25 (sans chiffrement, réseau interne).",
+  "min": 1,
+  "max": 65535,
+  "required": false,
+  "allowBlank": false,
+  "slider": false
+ },
+ {
+  "key": "spring.mail.username",
+  "tier": "common",
+  "group": "Courriel des alertes",
+  "label": "Compte d'envoi",
+  "type": "string",
+  "help": "Identifiant de connexion au serveur de courrier. Laisser vide si le serveur n'en demande pas.",
+  "allowBlank": true,
+  "required": false,
+  "slider": false
+ },
+ {
+  "key": "spring.mail.password",
+  "tier": "common",
+  "group": "Courriel des alertes",
+  "label": "Mot de passe du compte d'envoi",
+  "type": "secret",
+  "help": "Écrit sans jamais être affiché. Laisser vide pour conserver le mot de passe actuel.",
+  "allowBlank": true,
+  "required": false,
+  "slider": false
+ },
+ {
+  "key": "spring.mail.properties.mail.smtp.auth",
+  "tier": "advanced",
+  "group": "Courriel des alertes",
+  "label": "Le serveur demande une connexion",
+  "type": "bool",
+  "help": "Désactiver si le serveur de courrier accepte les messages sans identifiant (relais interne).",
+  "required": false,
+  "allowBlank": false,
+  "slider": false
+ },
+ {
+  "key": "spring.mail.properties.mail.smtp.starttls.enable",
+  "tier": "advanced",
+  "group": "Courriel des alertes",
+  "label": "Chiffrer la connexion (STARTTLS)",
+  "type": "bool",
+  "help": "Passe la connexion en chiffré avant d'envoyer le mot de passe. À laisser actif sauf serveur interne qui ne le propose pas.",
+  "required": false,
+  "allowBlank": false,
+  "slider": false
+ },
+ {
+  "key": "logging.logback.rollingpolicy.max-history",
+  "tier": "advanced",
+  "group": "Conservation et sécurité",
+  "label": "Journaux de l'application : jours conservés",
+  "type": "int",
+  "help": "Nombre de jours de fichiers journaux conservés dans /var/log/intracherche. Moins de jours : moins d'espace disque, mais moins d'historique pour comprendre un incident.",
+  "unit": "jours",
+  "min": 1,
+  "max": 3650,
+  "required": false,
+  "allowBlank": false,
+  "slider": false
+ },
+ {
+  "key": "logging.logback.rollingpolicy.max-file-size",
+  "tier": "advanced",
+  "group": "Conservation et sécurité",
+  "label": "Journaux de l'application : taille d'un fichier",
+  "type": "string",
+  "help": "Taille à partir de laquelle le journal passe au fichier suivant, par exemple 10MB ou 50MB.",
+  "required": true,
+  "allowBlank": false,
+  "slider": false
+ }
+]

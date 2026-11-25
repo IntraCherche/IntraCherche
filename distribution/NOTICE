@@ -1,0 +1,122 @@
+IntraCherche
+Copyright 2024-2026 IntraCherche
+
+Ce produit intègre des composants logiciels tiers distribués sous leurs propres licences,
+détaillées ci-dessous. Les textes complets des licences sont disponibles aux URL indiquées.
+
+═══════════════════════════════════════════════════════════════════════════════════════════
+COMPOSANTS SOUMIS À OBLIGATION D'ATTRIBUTION
+═══════════════════════════════════════════════════════════════════════════════════════════
+
+── Modèles de langue française spaCy (fr_core_news_md, fr_core_news_lg) ────────────────
+Auteur   : Explosion AI GmbH (https://explosion.ai)
+Licence  : LGPL-LR (Lesser General Public License for Linguistic Resources)
+           https://spdx.org/licenses/LGPL-LR.html
+
+Ces modèles ont été entraînés sur les corpus suivants :
+
+  • UD French Sequoia v2.8
+    Auteurs : Candito, Marie ; Seddah, Djamé ; Perrier, Guy ; Guillaume, Bruno
+    URL     : https://github.com/UniversalDependencies/UD_French-Sequoia
+    Licence : LGPL-LR
+
+  • WikiNER (French)
+    Auteurs : Joel Nothman, Nicky Ringland, Will Radford, Tara Murphy, James R. Curran
+    URL     : https://figshare.com/articles/5462500
+    Licence : CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+    Citation : Nothman et al. (2013). Learning multilingual named entity recognition
+               from Wikipedia. Artificial Intelligence, 194, 151–175.
+
+  • spaCy Lookups Data
+    Auteur  : Explosion AI GmbH
+    Licence : MIT
+
+  • Explosion fastText Vectors (OSCAR Common Crawl + Wikipedia)
+    Auteur  : Explosion AI GmbH
+    Licence : CC0 1.0
+
+── Apache Solr 9.10.1 ───────────────────────────────────────────────────────────────────
+Auteur   : The Apache Software Foundation (https://lucene.apache.org/solr)
+Licence  : Apache License 2.0 — https://www.apache.org/licenses/LICENSE-2.0
+Copyright 2006-2026 The Apache Software Foundation.
+This product includes software developed at The Apache Software Foundation.
+
+── Apache Tika ──────────────────────────────────────────────────────────────────────────
+Auteur   : The Apache Software Foundation (https://tika.apache.org)
+Licence  : Apache License 2.0 — https://www.apache.org/licenses/LICENSE-2.0
+
+── Apache Commons (commons-compress, commons-lang3) ─────────────────────────────────────
+Auteur   : The Apache Software Foundation (https://commons.apache.org)
+Licence  : Apache License 2.0 — https://www.apache.org/licenses/LICENSE-2.0
+
+── Spring Boot / Spring Framework ───────────────────────────────────────────────────────
+Auteur   : VMware, Inc. (https://spring.io)
+Licence  : Apache License 2.0 — https://www.apache.org/licenses/LICENSE-2.0
+
+── Qwen 3.5 9B (modèle de langage, Sherlock) ───────────────────────────────────────────
+Auteur   : Alibaba Cloud (https://huggingface.co/Qwen)
+Licence  : Apache License 2.0 — https://www.apache.org/licenses/LICENSE-2.0
+
+── Eclipse Temurin JRE 21 (machine virtuelle Java fournie) ──────────────────────────────
+Auteur   : Eclipse Adoptium (https://adoptium.net)
+Licence  : GPL v2 avec Classpath Exception — https://openjdk.org/legal/gplv2+ce.html
+
+── Bibliothèques LGPL / CDDL (liées dynamiquement, remplaçables) ────────────────────────
+  • Logback (QOS.ch) — EPL 1.0 / LGPL 2.1
+  • JHighlight — CDDL 1.0 / LGPL 2.1 (dépendance de Apache Tika)
+
+── junrar (lecture des archives RAR, dépendance de Apache Tika) ─────────────────────────
+Licence  : licence « UnRAR » — usage libre, à l'exclusion de la recréation de
+           l'algorithme de compression RAR (que IntraCherche n'utilise pas).
+
+── JAI Image I/O Core (dépendance de Apache Tika) ───────────────────────────────────────
+Licence  : BSD, avec la mention Sun : non conçu pour l'exploitation d'installations
+           nucléaires.
+
+── NVIDIA CUDA runtime (version GPU uniquement) ─────────────────────────────────────────
+Licence  : NVIDIA CUDA Toolkit EULA (gratuite, propriétaire) — https://docs.nvidia.com/cuda/eula/
+Les bibliothèques CUDA des builds GPU de PyTorch et ONNX Runtime ne sont pas incluses dans
+l'archive : l'installateur GPU les télécharge sur la machine du client, qui accepte alors
+la licence NVIDIA.
+
+── Ollama ───────────────────────────────────────────────────────────────────────────────
+Auteur   : Ollama, Inc. (https://ollama.com)
+Licence  : MIT — https://github.com/ollama/ollama/blob/main/LICENSE
+
+═══════════════════════════════════════════════════════════════════════════════════════════
+AUTRES COMPOSANTS TIERS (MIT / Apache 2.0 / BSD)
+═══════════════════════════════════════════════════════════════════════════════════════════
+
+Les composants suivants sont distribués sous licence MIT, Apache 2.0 ou BSD.
+Aucune obligation d'attribution spécifique n'est imposée pour la distribution binaire,
+mais leurs auteurs sont remerciés ici pour leurs contributions à l'écosystème open source.
+
+  Composant                          Licence     Auteur / Projet
+  ─────────────────────────────────────────────────────────────────────────────
+  intfloat/multilingual-e5-base      MIT         Yiyang Zhang et al. (Microsoft)
+  BAAI/bge-reranker-v2-m3            MIT         Beijing Academy of AI
+  ONNX Runtime                       MIT         Microsoft
+  PyTorch                            BSD         Meta AI / PyTorch Foundation
+  OpenCV (opencv-python-headless)    Apache 2.0  OpenCV team
+  Hugging Face tokenizers / hub      Apache 2.0  Hugging Face
+  NumPy                              BSD         NumPy developers
+  Bouncy Castle                      MIT         Legion of the Bouncy Castle
+  Apache PDFBox / POI                Apache 2.0  The Apache Software Foundation
+  Hibernate Validator                Apache 2.0  Red Hat
+  jsoup                              MIT         Jonathan Hedley
+  driver.js                          MIT         Kamran Ahmed
+  vue-router                         MIT         Eduardo San Martin Morote
+  TypeScript                         Apache 2.0  Microsoft
+  sentence-transformers              Apache 2.0  Nils Reimers, UKP Lab
+  RapidOCR / PaddleOCR models        Apache 2.0  Baidu Inc. / RapidAI
+  spaCy                              MIT         Explosion AI GmbH
+  FastAPI                            MIT         Sebastián Ramírez
+  uvicorn / gunicorn                 BSD / MIT   —
+  Vue 3 / Vite / Pinia               MIT         Evan You et al.
+  Axios                              MIT         Matt Zabriskie et al.
+  JJWT                               Apache 2.0  Les Hazlewood, Stormpath
+  SMBJ                               Apache 2.0  Hierynomus et al.
+  SQLite JDBC                        Apache 2.0  Taro L. Saito
+  Caffeine                           Apache 2.0  Ben Manes
+  odfdom-java                        Apache 2.0  The Document Foundation
+  uv                                 MIT / Apache 2.0      Astral Software

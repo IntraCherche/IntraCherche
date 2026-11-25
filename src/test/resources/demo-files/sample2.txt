@@ -1,0 +1,3 @@
+Another sample text file for demonstration purposes.
+This file contains different content to show how the indexing pipeline works.
+It has multiple lines and various words that should be indexed properly.

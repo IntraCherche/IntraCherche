@@ -1,0 +1,336 @@
+app:
+  version: "@project.version@"   # filled from pom.xml at build time: change the version there only
+
+jwt:
+  # REQUIRED — set this in application-local.yaml or via JWT_SECRET env var.
+  # Must be at least 64 characters. Generate with: openssl rand -base64 64
+  secret: ${JWT_SECRET}
+  # How long a user stays logged in without re-entering their password, in minutes
+  # (1440 = 24 h). Both the token and the browser cookie take their lifetime from here.
+  #
+  # A session ends before this on logout, and when the account is disabled, deleted or
+  # expired in Active Directory or its password changes — within security.sidCacheTtlMinutes.
+  expirationMinutes: 1440
+
+registry-config:
+  dbPath: db/registry.db
+  # Hours without being seen on the SMB share before a file is removed from the index. Default: 720 h (30 days).
+  stalledFilesThresholdHours: 720
+  # Safety valve: if more than this percentage of indexed files appear stalled, deletion is blocked to
+  # prevent an accidental index wipe (e.g. the SMB server was temporarily offline). Default: 30.
+  # Raise temporarily to 100 to force deletion when you know a large batch of files was intentionally removed.
+  safetyValveThresholdPercent: 30
+
+indexing-config:
+  indexesConfigPath: config/indexes.yaml
+  # Pause between indexing cycles in minutes. Default: 1.
+  cycleIntervalMinutes: 1
+  # Largest file read, in MB. A file is read into memory whole, several at a time: a larger one
+  # is not read and is indexed by its name only. Default: 256.
+  maxFileSizeMb: 256
+  # Most text kept per file (50 million characters ≈ 8,000 pages of dense text). Past it the rest of the file
+  # is not indexed. Raising either limit re-indexes the files it had cut short, at the next start.
+  maxTextChars: 50000000
+
+solr-config:
+  solrBaseUrl: "http://localhost:8983/solr"
+  # Path to the Solr configset source files, relative to the working directory.
+  # Dev default matches the source tree. Production installer overrides this to config/solr/configset.
+  configSetSourcePath: "src/main/resources/solr/configset"
+
+# GPU acceleration: each service below names where it runs. Everything on this server's
+# processor by default; with a GPU node (see LISEZMOI-GPU.md), point llm.ollamaUrl,
+# reranker.pythonUrl and ocr.gpuUrl at it (ports 11434, 8003, 8004). A GPU node whose owner also
+# uses the card for other work: set llm.gpuUrl and reranker.gpuUrl instead, and this server's own
+# services answer while the node's are stopped. The values that depend on CPU or GPU follow the
+# device each service reports. See INSTALL.md, "Accélération GPU".
+
+ocr:
+  # The OCR service on this server, which IntraCherche starts.
+  pythonUrl: "http://localhost:8000"
+  # GPU node only: its OCR, e.g. "http://192.168.10.20:8004". Scanned pages go there first,
+  # 30 times faster, and to pythonUrl while it does not answer. Empty: no GPU node.
+  gpuUrl: ""
+  readTimeoutSeconds: 120
+  # Maximum time to wait for all in-flight OCR pages to finish before the indexing
+  # cycle moves on. Raise if large batches of scanned documents are expected. Default: 60.
+  maxOcrWaitMinutes: 60
+  # Number of gunicorn workers. 0 = auto (recommended): IntraCherche allocates based on
+  # available CPU cores and RAM. Set to an explicit value to cap usage on shared machines.
+  workers: 0
+
+# Reranker service for Sherlock RAG — port 8003
+# Cross-encoder that scores (question, passage) pairs; runs after retrieval, before LLM synthesis.
+# Set enabled: false to skip reranking (Sherlock falls back to retrieval order); the service is
+# then not started. It serves Sherlock alone, so llm.enabled: false turns it off as well.
+reranker:
+  # localhost: IntraCherche starts it on this server's processor. A GPU node: its address,
+  # e.g. "http://192.168.10.20:8003"; nothing is then started here.
+  pythonUrl: "http://localhost:8003"
+  # GPU node that is not always available: its reranker, e.g. "http://192.168.10.20:8003", with
+  # pythonUrl left on localhost. Questions are scored there first, and here while it does not
+  # answer (40 passages instead of 100). Empty: no such node.
+  gpuUrl: ""
+  # 40 passages of 1800 chars take about 90 s with 4 threads on an 8-core CPU-only laptop,
+  # more while indexing runs. On timeout Sherlock falls back to retrieval order silently, which
+  # can drop the right passage — the very failure this setting exists to prevent, so keep a
+  # wide margin.
+  readTimeoutSeconds: 300
+  enabled: true
+  # How many Solr candidates to retrieve before reranking. Must be > llm.maxSnippets.
+  # This is the recall bottleneck: the cross-encoder is the only component that really judges
+  # relevance, and it never sees a passage outside this pool.
+  #
+  # 20 was too few even on the demo corpus. "Qui était le principal suspect ?" on a 46-page
+  # investigation report has its answer on the page ranked 30th by retrieval: invisible at 20,
+  # and the model — given five pages of the right report but not the right page — answered that
+  # it could not find the suspect and then named the relative who had in fact reported the
+  # offence. At 40 that page enters the pool, the reranker scores it 0.77 against 0.37 for the
+  # next, and the answer names the person the report names.
+  #
+  # The pool the fusion draws from is capped at 300 (200 BM25 + 100 kNN), so raising this above
+  # 300 does nothing until those are raised too. Cost is roughly linear and paid on every
+  # question: about 2 s per passage on a CPU-only server, under a second for the whole batch
+  # on a GPU. 0 = auto: 40 on a processor, 100 on a GPU, as the reranker reports its device.
+  candidates: 0
+  # Passages per forward pass, for a reranker IntraCherche starts here. 8 suits a CPU; a GPU is
+  # starved at 8. 0 = auto: the reranker takes 8 on a processor, 32 on a GPU.
+  batchSize: 0
+  # 0 = auto. See resources section.
+  workers: 0
+  # Torch threads per reranker process. 0 = auto (half the cores). Sherlock reranks one
+  # question at a time, so threads — not workers — are what cut the latency.
+  threads: 0
+  # The reranker reads the page window the LLM will read, cut to this length. The model reads
+  # 512 tokens (about 1800 chars) at most, so more costs time for nothing. At 800 the answer was
+  # past the cut on 7 of 16 pages of the evaluation; at 1800, on 1. Scoring took ~37% longer.
+  maxPassageChars: 1800
+  # Cross-encoder model to use. Override in application-local.yaml if needed.
+  rerankerModel: "BAAI/bge-reranker-v2-m3"
+
+# Embedding service for dense vector (semantic) search — port 8002
+# Set enabled: false to fall back to BM25-only search without stopping the service.
+embedding:
+  pythonUrl: "http://localhost:8002"
+  readTimeoutSeconds: 120
+  enabled: true
+  # 0 = auto. See resources section.
+  workers: 0
+  embeddingModel: "intfloat/multilingual-e5-base"
+  # Longest a search waits for the embedding service, which indexing may be saturating.
+  # Past it the search runs on keywords only and the UI says the server is under load.
+  queryMaxWaitMillis: 2000
+
+# NER service for geographical location extraction
+ner:
+  pythonUrl: "http://localhost:8001"
+  readTimeoutSeconds: 30
+  # Maximum number of geo entities stored per document after frequency ranking
+  geoCapCities: 10
+  geoCapDepartments: 5
+  geoCapRegions: 3
+  geoCapCountries: 5
+  # 0 = auto. See resources section.
+  workers: 0
+  # SpaCy model: fr_core_news_md (~300 MB RAM) or fr_core_news_lg (~1 GB RAM)
+  nerModel: "fr_core_news_md"
+
+search:
+  # Searches allowed per user per minute (0 = unlimited). Protects everyone's searches and the
+  # indexing from a runaway script or a malicious user; far above what a person types.
+  rateLimitPerMinute: 60
+
+resources:
+  # RAM (GB) reserved for Java heap, Solr, and the OS — not counted towards Python service budgets.
+  # Increase on machines where Java or Solr are configured with large heaps.
+  reservedRamGb: 3
+  # Linux niceness (0-19) of the OCR, NER and embedding services, which indexing keeps busy.
+  # When the CPU is short, searches (web app, Solr) are served first. 0 = normal priority.
+  indexingServicesNice: 10
+
+audit:
+  # How many daily log files to keep before older ones are deleted automatically.
+  # 365 = 1 year, 1095 = 3 years. Rotation is always daily.
+  retention-days: 365
+
+# Application log file — written to /var/log/intracherche/app.log (fixed location), rotated daily and compressed.
+# Adjust max-history (days kept) and max-file-size (per-file cap) to tune disk usage.
+logging:
+  logback:
+    rollingpolicy:
+      # Days of rolled log files to keep. Reduce to save disk space. Default: 30.
+      max-history: 30
+      # Maximum size of a single log file before it is rolled over. Default: 10MB.
+      max-file-size: 10MB
+
+alerts:
+  email:
+    from: "intracherche-noreply@corp.local"
+    base-url: "http://intracherche.corp.local"
+
+spring:
+  mail:
+    # host: smtp.corp.local   # no host = no email sent: alerts and answers stay in the bell. Set it in the admin panel.
+    port: 587
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # It is highly recommended to turn on Virtual threads for better perfs
+  threads:
+    virtual:
+      enabled: true
+
+  ldap:
+    urls: ldaps://hostname:686
+    base: dc=corp,dc=local
+    username: "ldap-reader@corp.local"
+    password: "P@ssword123"
+
+  security:
+    ldap:
+      user:
+        # {0} is the token Spring replaces with the username from the login form
+        search-filter: "(sAMAccountName={0})"
+        # DO NOT put the DC= parts here if they are in spring.ldap.base
+        search-base: "CN=Users"
+
+security:
+  # How long a user's Active Directory group SIDs are reused before being read again.
+  # These SIDs decide which documents the user may see, and they are needed on every
+  # request, not only at login — so this is both a load setting and the delay with which
+  # a group change (granting or revoking access) takes effect. The account state is read
+  # with them: a disabled, deleted or expired account, or a changed password, ends the
+  # user's sessions within the same delay. Lower it where access
+  # changes must apply promptly; 0 disables the cache and reads AD on every request.
+  sidCacheTtlMinutes: 15
+
+llm:
+  # localhost: Ollama on this server. A GPU node: its address, e.g. "http://192.168.10.20:11434".
+  ollamaUrl: "http://localhost:11434"
+  # GPU node that is not always available: its Ollama, e.g. "http://192.168.10.20:11434", with
+  # ollamaUrl left on localhost. Questions are answered there with gpuModel, and here with model
+  # while it does not answer. Empty: no such node.
+  gpuUrl: ""
+  # The model on the GPU node. Empty: the same as model. The processor here usually needs a
+  # smaller model (qwen3.5:4b) than the card (qwen3.5:9b) to answer in reasonable time.
+  gpuModel: ""
+  # Model to use for query expansion.
+  # Options (smallest to largest): qwen3.5:4b, qwen3.5:9b, qwen3.5:27b.
+  # Thinking is auto-disabled for qwen3.5+ (see LlmService /api/chat think:false).
+  # EXPERIMENTAL — currently optimised for French-language queries only.
+  model: "qwen3.5:9b"
+  # Timeout in seconds for a single Ollama request (query rewriting or answer synthesis).
+  # On a processor without GPU the 9B model needs minutes: measured about 6 on 8 vCPUs of a desktop
+  # Ryzen. A GPU answers in seconds. Raise this if questions are marked
+  # FAILED and app.log says "Ollama generation aborted after …s (read timeout)". Default: 1800.
+  readTimeoutSeconds: 1800
+  # Threads Ollama may use when it runs on this server's processor. 0 = automatic: the cores minus 2
+  # from 6 cores up (8 vCPUs: 6 threads), nothing below, where Ollama chooses. Using every vCPU made
+  # generation up to three times slower on a VM. Ignored when Ollama or its GPU node is another machine.
+  numThread: 0
+  # Ollama context window (num_ctx) in tokens. Pinned on purpose: Ollama does NOT fall back to the
+  # model's trained window, it applies OLLAMA_CONTEXT_LENGTH (4096 in 0.24, 2048 in older builds) to
+  # every model alike — qwen3.5:4b and :9b are both trained for 262144 and both get clamped to 4096.
+  # 4096 is too small here: a follow-up question (parent Q + its full answer + 5 snippets) runs ~4.7k
+  # tokens, and Ollama truncates oldest-first, dropping the instructions that produce the citations —
+  # silently, with no error. 8192 leaves ~1.7x headroom. Raise it only after measuring the KV-cache
+  # cost (compare `ollama ps` size before and after); Sherlock answers one question at a time, so
+  # that cost is a single fixed allocation. Set 0 to defer to the operator's Ollama environment.
+  numCtx: 8192
+  # Maximum number of Solr document snippets passed as context to the LLM.
+  maxSnippets: 5
+  # Length in characters of each Solr highlight fragment used as a snippet.
+  snippetFragSize: 400
+  # Characters of page text given to the LLM per passage. A page shorter than this is sent
+  # whole, which is what keeps a passage's facts attached to the person the page names.
+  # maxSnippets x this is the bulk of the prompt: 5 x 2500 is about 4.2k tokens of French,
+  # and numCtx must stay well above the total or Ollama truncates the instructions away.
+  maxPassageChars: 2500
+  # Set to false to turn Sherlock off for everybody: the pane is hidden, questions are refused,
+  # and neither the reranker nor the model's RAM reservation is kept on this server.
+  # To restrict it to some users instead, keep true and set sherlockGroupSid below.
+  enabled: true
+  # Maximum number of questions that can wait in the in-memory queue.
+  # When the queue is full, a new question waits 5 s for a free slot, then is rejected with a 503.
+  # Raise this if users frequently see "queue saturée" messages during peak hours.
+  queueCapacity: 50
+  # SID of the Samba/AD group whose members are allowed to use Sherlock.
+  # Leave empty (or remove) to allow all authenticated users.
+  # To get the SID: samba-tool group show "IntraCherche-Sherlock" | grep objectSid
+  # Example: sherlockGroupSid: "S-1-5-21-123456789-987654321-111111111-1234"
+  sherlockGroupSid: ""
+  # Questions each user may ask Sherlock per day (new questions, follow-ups and "Interroger ce
+  # document" alike), reset at midnight server time. Three tiers: everyone who may use Sherlock
+  # is in base; members of premiumGroupSid or extendedGroupSid get more, the highest tier winning.
+  # 0 = unlimited (the default). A question that fails is given back. The admin panel shows each
+  # user's count for the day.
+  quota:
+    base: 0
+    premium: 0
+    extended: 0
+    premiumGroupSid: ""
+    extendedGroupSid: ""
+    # Questions one user may have waiting or being answered at once; 0 = no limit.
+    maxPending: 2
+
+admin:
+  # SID of the Samba/AD group whose members are allowed to access the admin panel.
+  # Leave empty to lock the panel for everyone (safest default — require an explicit SID to grant access).
+  # To get the SID: samba-tool group show "IntraCherche-Admin" | grep objectSid
+  # Example: adminGroupSid: "S-1-5-21-123456789-987654321-111111111-1234"
+  adminGroupSid: ""
+
+# Session of the OpenID Connect handshake only (state, nonce, PKCE between the redirect to the provider
+# and the way back); the login session itself is the JWT cookie. Lax because the way back is a
+# cross-site navigation. Ended by the application as soon as the login ends.
+server:
+  servlet:
+    session:
+      timeout: 5m
+      cookie:
+        same-site: lax
+        http-only: true
+        secure: ${app.cookie.secure:true}
+
+# Single sign-on (OpenID Connect). Off by default. Setup, provider examples and troubleshooting: INSTALL.md,
+# « Connexion unique (SSO) ». For a company the identity of the provider (a token claim) is looked up in one
+# directory attribute and opens the session of the one account that matches:
+# auth:
+#   oidc:
+#     enabled: true
+#     mode: directory
+#     registrationId: sso                  # id under spring.security.oauth2.client.registration
+#     issuer: https://login.example/realms/corp   # exact issuer of the tokens
+#     directory:
+#       claim: preferred_username          # token claim that identifies the user
+#       attribute: userPrincipalName       # directory attribute it must equal (exactly one account)
+#       # requireVerifiedEmail: true       # default: true for the claim "email", false otherwise
+#     # buttonLabel: "Se connecter avec le SSO"
+#   password:
+#     enabled: false     # SSO only: the password login refuses everyone. No emergency account:
+#                        # to get it back, set true here and restart (needs root). See INSTALL.md.
+
+# Public demo only: sign in with Google, every visitor a session of their own (mode demo-fixed). Off by default; the password login always works.
+# auth:
+#   oidc:
+#     enabled: true
+#     mode: demo-fixed          # every verified visitor signs in as fixedUser: never for a real installation
+#     fixedUser: demo
+#   passwordForm:
+#     hidden: true              # hides the form only; /login?password shows it
+# spring:
+#   security:
+#     oauth2:
+#       client:
+#         registration:
+#           google:
+#             client-id: ${GOOGLE_CLIENT_ID}
+#             client-secret: ${GOOGLE_CLIENT_SECRET}
+#             scope: openid,email
+#             redirect-uri: https://intracherche.example.org/login/oauth2/code/google

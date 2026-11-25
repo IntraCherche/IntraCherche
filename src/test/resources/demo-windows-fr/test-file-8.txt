@@ -1,0 +1,1 @@
+Le système de gestion des documents intègre des fonctionnalités de versioning pour suivre les modifications des fichiers. Chaque version est archivée pour garantir la traçabilité des évolutions.

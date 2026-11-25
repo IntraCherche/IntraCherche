@@ -1,0 +1,17 @@
+[project]
+name = "ner-service"
+version = "0.1.0"
+description = "Named entity recognition service for geographical location extraction"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.136.1",
+    "gunicorn>=25.3.0",
+    "uvicorn>=0.46.0",
+    # NER engine
+    "spacy>=3.8.0,<4.0.0",
+    # French models — both installed, admin picks one via NER_MODEL env var.
+    # fr_core_news_md (~43 MB RAM): good accuracy, low resource usage (default)
+    # fr_core_news_lg (~500 MB RAM): best accuracy, same CPU cost, higher RAM
+    "fr-core-news-md @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_md-3.8.0/fr_core_news_md-3.8.0-py3-none-any.whl",
+    "fr-core-news-lg @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_lg-3.8.0/fr_core_news_lg-3.8.0-py3-none-any.whl",
+]

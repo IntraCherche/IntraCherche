@@ -1,0 +1,1 @@
+Fourth test file with unique content. This file is part of a series of test files created to verify the directory structure and file creation process. The content is varied to ensure each file serves as a distinct test case.

@@ -1,0 +1,1 @@
+Les utilisateurs peuvent créer des favoris pour accéder rapidement aux documents les plus importants. Le système de gestion des permissions assure la sécurité des informations sensibles.

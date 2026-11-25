@@ -1,0 +1,20 @@
+Project: Enterprise file discovery + OCR + search engine
+Langs: Java (orchestration, discovery, indexing), Python (OCR)
+Index: Apache Solr (multiple independent indices)
+Env: Linux + SMB shares, offline, long-running service
+
+Pipeline:
+Filesystem scan → in-memory queues → OCR (Python) → Solr index
+
+Key design:
+- Single-threaded, I/O-bound directory scan
+- Backpressure via in-memory queues
+- Extension-filtered discovery (configurable)
+- Registry = source of truth, Solr = derivative
+- Incremental, fair indexing across indices (no batch rescans)
+- OCR + indexing are failure-recoverable
+
+Constraints:
+- Millions of files, huge scanned PDFs
+- Continuous operation, no duplicate scanners
+- Limited threads, limited RAM

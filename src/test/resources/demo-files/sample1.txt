@@ -1,0 +1,3 @@
+This is the first sample text file for the enterprise search engine demo.
+It contains some sample content that will be indexed by the search engine.
+The content is plain text and should be easily searchable.

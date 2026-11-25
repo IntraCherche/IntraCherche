@@ -1,0 +1,46 @@
+# Build outputs
+/target/
+/dist/
+/out/
+build/
+*.class
+*.log
+
+# Frontend
+node_modules/
+/src/ui-vue/dist/
+/src/main/resources/static/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+/ocr-service/.venv/
+/ner-service/.venv/
+/embedding-service/model/
+/reranker-service/model/
+
+# Local configuration and data (live config holds credentials: never commit)
+/config/
+/solr/
+db/
+src/main/resources/db/
+/src/main/resources/config/application-local.yaml
+src/test/resources/config/application-test.local.yaml
+src/test/resources/config/indexes-test.local.yaml
+*.sqlite
+
+# IDE and OS
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.DS_Store
+Thumbs.db
+*.bak
+
+# Generated reading copies of the guides
+/doc/INSTALL.odt
+/doc/INSTALL.pdf

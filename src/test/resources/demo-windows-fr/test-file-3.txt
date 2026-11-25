@@ -1,0 +1,1 @@
+Les fonctionnalités de recherche avancée permettent de filtrer les documents par date, par auteur ou par type de contenu. Cette interface conviviale facilite l'exploration des ressources internes.

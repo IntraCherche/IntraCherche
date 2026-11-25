@@ -1,0 +1,156 @@
+# Sample YAML file for configuration.
+# Comment and uncomment values as needed.
+# Every value has a default within the application.
+# This file serves to be a drop in for config.yml
+
+# Unless specified in the comments, DO NOT put these options in quotes!
+# You can use https://www.yamllint.com/ if you want to check your YAML formatting.
+
+# Options for networking
+network:
+  # The IP to host on (default: 127.0.0.1).
+  # Use 0.0.0.0 to expose on all network adapters.
+  host: 0.0.0.0
+
+  # The port to host on (default: 5000).
+  port: 5000
+
+  # Disable HTTP token authentication with requests.
+  # WARNING: This will make your instance vulnerable!
+  # Turn on this option if you are ONLY connecting from localhost.
+  disable_auth: true
+
+  # Disable fetching external content in response to requests,such as images from URLs.
+  disable_fetch_requests: false
+
+  # Send tracebacks over the API (default: False).
+  # NOTE: Only enable this for debug purposes.
+  send_tracebacks: false
+
+  # Select API servers to enable (default: ["OAI"]).
+  # Possible values: OAI, Kobold.
+  api_servers: ["OAI"]
+
+# Options for logging
+logging:
+  # Enable prompt logging (default: False).
+  log_prompt: false
+
+  # Enable generation parameter logging (default: False).
+  log_generation_params: false
+
+  # Enable request logging (default: False).
+  # NOTE: Only use this for debugging!
+  log_requests: false
+
+# Options for model overrides and loading
+# Please read the comments to understand how arguments are handled
+# between initial and API loads
+model:
+  # Directory to look for models (default: models).
+  # Windows users, do NOT put this path in quotes!
+  model_dir: "../Models"
+
+  # Allow direct loading of models from a completion or chat completion request (default: False).
+  # This method of loading is strict by default.
+  # Enable dummy models to add exceptions for invalid model names.
+  inline_model_loading: false
+
+  # Sends dummy model names when the models endpoint is queried. (default: False)
+  # Enable this if the client is looking for specific OAI models.
+  use_dummy_models: false
+
+  # A list of fake model names that are sent via the /v1/models endpoint. (default: ["gpt-3.5-turbo"])
+  # Also used as bypasses for strict mode if inline_model_loading is true.
+  dummy_model_names: ["gpt-3.5-turbo"]
+
+  # An initial model to load.
+  # Make sure the model is located in the model directory!
+  # REQUIRED: This must be filled out to load a model on startup.
+  model_name: "Qwen3.6-27B-exl3-4.15bpw"
+
+  # Names of args to use as a fallback for API load requests (default: []).
+  use_as_default: []
+
+  # Backend to use for this model (auto-detect if not specified)
+  # Options: exllamav2, exllamav3
+  backend: exllamav3
+
+  # Max sequence length (default: min(max_position_embeddings, cache_size)).
+  # Set to -1 to fetch from the model's config.json
+  max_seq_len: 131072
+
+  # Size of the key/value cache to allocate, in tokens (default: 4096).
+  # Must be a multiple of 256.
+  cache_size:
+
+  # Enable different cache modes for VRAM savings (default: FP16).
+  # For exllamav3, specify the pair k_bits,v_bits where k_bits and v_bits are integers from 2-8 (i.e. 8,8).
+  # CHANGED: 8,8 provides optimal performance and massive savings for the 128k context on a 3090.
+  cache_mode: 8,8
+
+  # Load model with tensor parallelism.
+  tensor_parallel: false
+
+  # Sets a backend type for tensor parallelism. (default: native).
+  tensor_parallel_backend: native
+
+  # Automatically allocate resources to GPUs (default: True).
+  gpu_split_auto: true
+
+  # Reserve VRAM used for autosplit loading (default: 96 MB on GPU 0).
+  autosplit_reserve: [96]
+
+  # An integer array of GBs of VRAM to split between GPUs (default: []).
+  gpu_split: []
+
+  # Rope scale (default: 1.0).
+  rope_scale: 
+
+  # Rope alpha (default: None).
+  rope_alpha:
+
+  # Chunk size for prompt ingestion (default: 2048).
+  chunk_size: 2048
+
+  # Use output chunking (default: True)
+  output_chunking: true
+
+  # Set the maximum number of prompts to process at one time (default: None/Automatic).
+  max_batch_size:
+
+  # Set the prompt template for this model. (default: None)
+  prompt_template: qwen2.5
+
+  # Enables vision support if the model supports it. (default: False)
+  vision: false
+
+# Options for draft models (speculative decoding)
+draft_model:
+  draft_model_dir: "../Models"
+  draft_model_name: 
+  draft_rope_scale: 1.0
+  draft_rope_alpha:
+  draft_cache_mode: Q8
+  draft_gpu_split: []
+
+# Options for Sampling
+sampling:
+  override_preset: safe_defaults
+
+# Options for Loras
+lora:
+  lora_dir: loras
+  loras:
+
+# Options for embedding models and loading.
+embeddings:
+  embedding_model_dir: models
+  embeddings_device: cpu
+  embedding_model_name:
+
+# Options for development and experimentation
+developer:
+  unsafe_launch: false
+  disable_request_streaming: false
+  realtime_process_priority: false

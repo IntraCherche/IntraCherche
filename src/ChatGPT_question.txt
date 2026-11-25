@@ -1,0 +1,102 @@
+Context:
+- Project: Enterprise search engine in Java 21
+- Using SOLR
+- A Directory Scanner feeds a blocking queue that gets written in a registry (SQLite) which is then indexed by SOLR.
+
+Problem:
+In the JUnit Test even when starting the consumer after the producer (scan method) the exception (IllegalStateException: queue full) still occurs
+because the producer fills in the queue faster than the consumer can consume it.
+
+Code:
+record FileDiscoveredEvent(Path path, long size, Instant lastModified) {}
+
+
+public class DirectoryScanner {
+
+    private static final Logger log = LoggerFactory.getLogger(DirectoryScanner.class);
+
+    private final FileEventEmitter emitter;
+    private final AtomicLong fileCounter = new AtomicLong(0);
+
+    public DirectoryScanner(FileEventEmitter emitter) {
+        this.emitter = emitter;
+    }
+
+    // Recursively scan directories, single-threaded
+    public void scan(Path dir) throws IOException, InterruptedException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path entry : stream) {
+                BasicFileAttributes attrs;
+                try {
+                    // We don't follow symlinks to avoid potential infinite loops
+                    // and to prevent duplicate indexing of the same document
+                    attrs = Files.readAttributes(entry, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+                } catch (IOException e) {
+                    log.warn("Cannot read attributes of {}: {}", entry, e.getMessage());
+                    continue;
+                }
+
+                if (attrs.isDirectory()) {
+                    scan(entry);  // recursion
+                } else if (attrs.isRegularFile()) {
+                    emitter.emit(FileDiscoveredEvent(entry, attrs.size(), attrs.lastModifiedTime().toInstant()));
+                }
+            }
+        }
+    }
+}
+
+Test code :
+
+@Test
+    void smokeTestScan() throws Exception {
+
+
+        BlockingQueue<FileDiscoveredEvent> events = new ArrayBlockingQueue<>(10_000);
+        FileEventEmitter emitter = events::add;
+
+        DirectoryScanner scanner = new DirectoryScanner(emitter);
+
+        // Start consumer thread first
+        AtomicLong count = new AtomicLong();
+//        events.forEach(e ->
+//        {   count.incrementAndGet();
+//            System.out.println("Discovered: " + e.path());
+//        });
+
+
+        // We simulate a consumer otherwise the elements stack up on the queue which becomes full
+        // and throws an exception. Moreover we have to first start the consumer otherwise
+        // the queue becomes full
+
+
+        Thread consumer = new Thread(() -> {
+            try {
+                while (true) {
+                    FileDiscoveredEvent e = events.take();
+                    long c = count.incrementAndGet();
+                    if (c % 2 == 0) {
+                        log.info("Consumed {}, queue size = {}", c, events.size());
+                        System.out.println("Discovered " + c + " files");
+                    }
+                }
+            } catch (InterruptedException ignored) {}
+        });
+        consumer.start();
+
+        // Now that consumer has started we can start the producer
+        scanner.scan(Paths.get(testDir));
+
+
+        // Wait for the scanner to complete (this is a simplified approach)
+        // In a real test, you might want to add a timeout or proper completion signaling
+        Thread.sleep(5000); // Wait 5 seconds to let the scan complete
+
+        // Interrupt the consumer thread to stop it
+        consumer.interrupt();
+
+        System.out.println("Total files discovered: " + count.get());
+    }
+
+Question:
+How should I handle this "queue full" exception if it happens in production ? I know I can increase the initial capacity or use a LinkedBlockingQueue. But then there will not be any backpressure. I don't know if it is safe.

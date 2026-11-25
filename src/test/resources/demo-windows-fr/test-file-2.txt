@@ -1,0 +1,1 @@
+La base de données des documents contient des informations sensibles sur les projets en cours. Chaque fichier est indexé pour permettre une recherche rapide et efficace par les utilisateurs autorisés.
