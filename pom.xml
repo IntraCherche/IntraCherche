@@ -6,7 +6,7 @@
 
     <groupId>eu.intracherche</groupId>
     <artifactId>intracherche</artifactId>
-    <version>3.4.4-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
     <name>IntraCherche</name>
 
     <properties>

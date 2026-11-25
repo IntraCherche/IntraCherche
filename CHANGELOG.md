@@ -4,7 +4,7 @@ Toutes les modifications notables d'IntraCherche sont consignées ici.
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) et le
 projet applique le [versionnage sémantique](https://semver.org/lang/fr/).
 
-## [3.4.4] — 2026-11-16
+## [3.5.0] — à paraître
 
 ### Ajouté
 

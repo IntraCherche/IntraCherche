@@ -539,7 +539,7 @@ Signes : dans `app.log`, `java.lang.OutOfMemoryError: Java heap space`, suivi d'
 des milliers d'erreurs. Le plus souvent, un document très volumineux ou un grand nombre de PDF
 scannés ont rempli la mémoire de l'application.
 
-Depuis la version 3.4.4, le service s'arrête de lui-même au premier dépassement de mémoire et
+Depuis la version 3.5.0, le service s'arrête de lui-même au premier dépassement de mémoire et
 systemd le relance au bout de 15 secondes ; l'indexation reprend alors là où elle s'était arrêtée.
 Pour relancer manuellement: `sudo systemctl restart intracherche`.
 
