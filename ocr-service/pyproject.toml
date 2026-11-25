@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.136.1",
-    "gunicorn>=25.3.0",
+    "gunicorn>=27.0.1",
     "python-multipart>=0.0.31",
     "opencv-python-headless>=4.13.0.92,<5",
     "onnxruntime>=1.20",
